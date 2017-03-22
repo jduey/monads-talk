@@ -8,6 +8,7 @@
   (toString [_] (str "<Maybe " x ">"))
 
   m/Monad
+  (zero [_] nil)
   (wrap [_ new-x] (Maybe. new-x))
   (flat-map [_ f]
     (when x

@@ -4,6 +4,7 @@
 
 (extend-type clojure.lang.IPersistentVector
   m/Monad
+  (zero [_] [])
   (wrap [_ x] (vector x))
   (flat-map [xs f]
     (vec (mapcat f xs))))

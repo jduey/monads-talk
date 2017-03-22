@@ -4,6 +4,7 @@
 
 (extend-type clojure.lang.PersistentHashSet
   m/Monad
+  (zero [_] #{})
   (wrap [_ x] (hash-set x))
   (flat-map [xs f]
     (set (mapcat f xs))))
