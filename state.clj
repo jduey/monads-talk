@@ -2,7 +2,8 @@
 (ns StateM
   (:require [Monads :as m]))
 
-(defn state [fx])
+(defmacro state [& exprs] `(StateM/StateFn. (fn [state-value#]
+                                              [(do ~@exprs) state-value#])))
 
 (deftype StateFn [fx]
   clojure.lang.IFn
@@ -15,8 +16,8 @@
                 (let [[x new-state] (inner-fn state-value)]
                   ((state-f x) new-state))))))
 
-(defn state [x] (StateFn. (fn [state-value]
-                            [x state-value])))
+(defmethod print-method StateFn [v ^java.io.Writer w]
+    (.write w "<StateFn ...>"))
 
 (defn get-state []
   (StateFn. (fn [state-value]
@@ -43,11 +44,10 @@
               [state-value (apply update state-value key f args)])))
 
 (defn plus-1 [x]
-  (m/for [_ (update-val :log (fnil conj [])
-                        (print-str "executing 'plus-1' with input of" x))]
-    (inc x)))
+  (state (println "executing 'plus-1' with input of" x)
+         (inc x)))
 
 (defn dbl [x]
-  (m/for [_ (update-val :log (fnil conj [])
-                        (print-str "executing 'dbl' with input of" x))]
-    (+ x x)))
+  (state (println "executing 'dbl' with input of" x)
+         (+ x x)))
+
